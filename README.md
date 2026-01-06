@@ -2,7 +2,7 @@ Microsoft Defender for Endpoint MCP Server
 An MCP (Model Context Protocol) server that exposes the Microsoft Defender for Endpoint (MDE) REST API as structured, machine-callable tools for LLMs, agents, and automation systems.
 This server enables secure, programmatic access to Defender alerts, machines, vulnerabilities, advanced hunting, indicators, exposure scoring, and (optionally) response actions—without embedding Defender logic directly into the model.
 
-Why This Exists
+Why This Exists?
 Modern security operations increasingly rely on AI-assisted analysis and decision-making. This MCP server provides a clean separation of concerns:
 •	LLMs reason
 •	MCP tools act
