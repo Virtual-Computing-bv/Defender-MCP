@@ -1,16 +1,19 @@
 Microsoft Defender for Endpoint MCP Server
 An MCP (Model Context Protocol) server that exposes the Microsoft Defender for Endpoint (MDE) REST API as structured, machine-callable tools for LLMs, agents, and automation systems.
 This server enables secure, programmatic access to Defender alerts, machines, vulnerabilities, advanced hunting, indicators, exposure scoring, and (optionally) response actions—without embedding Defender logic directly into the model.
+
 Why This Exists
 Modern security operations increasingly rely on AI-assisted analysis and decision-making. This MCP server provides a clean separation of concerns:
 •	LLMs reason
 •	MCP tools act
 •	Defender remains the source of truth
+
 This design allows you to:
-•	Add Defender context to AI systems safely
+•  Add Defender context to AI systems safely
 •	Enable SOC copilots, security agents, and automation
 •	Avoid hard-coding Defender APIs into prompt logic
 •	Apply governance and guardrails at the tool layer
+
 Key Capabilities
 This server exposes 72 MCP tools mapped directly to Microsoft Defender for Endpoint APIs.
 Visibility & Intelligence
@@ -21,6 +24,7 @@ Visibility & Intelligence
 •	Advanced Hunting (KQL)
 •	Threat indicators
 •	Entity lookups (IPs, domains, files, users)
+
 Response & Actions (Optional / High-Privilege)
 •	Machine isolation / un-isolation
 •	Antivirus scans
@@ -28,7 +32,9 @@ Response & Actions (Optional / High-Privilege)
 •	Live Response sessions
 •	Library file uploads
 •	Device offboarding
+
 Important: Response actions require elevated Defender permissions and should be tightly controlled.
+
 Architecture Overview
 LLM / Agent
     ↓
@@ -43,6 +49,7 @@ Design Principles
 •	Token-cached authentication
 •	No shell execution or OS-level access
 •	API-only interaction with Defender
+
 Project Structure
 src/
 ├── index.ts                # MCP server bootstrap & tool registry
@@ -56,32 +63,39 @@ src/
 ├── advanced-hunting.ts     # KQL hunting queries
 ├── entities.ts             # IP, domain, file, user entities
 └── scoring.ts              # Exposure & secure score
-Authentication & Permissions
+
+Authentication & Permissions:
 This server uses Azure AD Application Authentication via MSAL (confidential client).
-Required Environment Variables
+
+Required Environment Variables:
 TENANT_ID=<azure-ad-tenant-id>
 CLIENT_ID=<app-registration-client-id>
 CLIENT_SECRET=<client-secret>
-Azure App Registration
+
+Azure App Registration:
 1.	Create an Azure AD App Registration
 2.	Add Microsoft Threat Protection API permissions
 3.	Grant Admin Consent
+
 Common Permissions
 Read-only use cases:
 •	Alert.Read.All
 •	Machine.Read.All
 •	Vulnerability.Read.All
 •	AdvancedHunting.Read.All
+
 Response / action use cases (use sparingly):
 •	Machine.Isolate
 •	Machine.Offboard
 •	Machine.LiveResponse
 •	Machine.Scan
 •	Ti.ReadWrite
+
 Best practice:
 Use separate app registrations for:
 •	Read-only access
 •	Response / remediation actions
+
 Installation
 git clone <repo-url>
 cd defender-mcp-server
@@ -150,6 +164,7 @@ Roadmap Ideas (Optional Enhancements)
 •	Read-only / response mode flags
 •	Audit logging middleware
 •	Multi-tenant support
+
 Disclaimer
 This project interacts with security-critical infrastructure.
 Use at your own risk. The authors assume no liability for misuse, misconfiguration, or unauthorized access.
