@@ -18,9 +18,11 @@ import { machineActionTools } from "./tools/machine-actions.js";
 import { advancedHuntingTools } from "./tools/advanced-hunting.js";
 import { entityTools } from "./tools/entities.js";
 import { scoringTools } from "./tools/scoring.js";
+import { incidentTools } from "./tools/incidents.js";
 
 // Collect all tools
 const allToolDefinitions = [
+  ...incidentTools,
   ...alertTools,
   ...machineTools,
   ...vulnerabilityTools,

@@ -85,22 +85,23 @@ export async function getMachineActions(params: z.infer<typeof GetMachineActions
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/machineactions", { queryParams });
+  return defenderApiRequest("/machineactions", { queryParams, useWdatp: true });
 }
 
 export async function getMachineActionById(params: z.infer<typeof GetMachineActionByIdSchema>) {
-  return defenderApiRequest(`/machineactions/${params.actionId}`);
+  return defenderApiRequest(`/machineactions/${params.actionId}`, { useWdatp: true });
 }
 
 export async function cancelMachineAction(params: z.infer<typeof CancelMachineActionSchema>) {
   return defenderApiRequest(`/machineactions/${params.actionId}/cancel`, {
     method: "POST",
     body: { Comment: params.comment },
+    useWdatp: true,
   });
 }
 
 export async function getPackageSasUri(params: z.infer<typeof GetPackageSasUriSchema>) {
-  return defenderApiRequest(`/machineactions/${params.actionId}/getPackageUri`);
+  return defenderApiRequest(`/machineactions/${params.actionId}/getPackageUri`, { useWdatp: true });
 }
 
 export async function runLiveResponse(params: z.infer<typeof RunLiveResponseSchema>) {
@@ -111,12 +112,14 @@ export async function runLiveResponse(params: z.infer<typeof RunLiveResponseSche
       Commands: body.commands,
       Comment: body.comment,
     },
+    useWdatp: true,
   });
 }
 
 export async function getLiveResponseResult(params: z.infer<typeof GetLiveResponseResultSchema>) {
   return defenderApiRequest(
-    `/machines/${params.machineId}/LiveResponseResultDownloadLink(actionId=${params.actionId},commandIndex=${params.commandIndex})`
+    `/machines/${params.machineId}/LiveResponseResultDownloadLink(actionId=${params.actionId},commandIndex=${params.commandIndex})`,
+    { useWdatp: true }
   );
 }
 
@@ -126,11 +129,11 @@ export async function getInvestigations(params: z.infer<typeof GetInvestigations
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/investigations", { queryParams });
+  return defenderApiRequest("/investigations", { queryParams, useWdatp: true });
 }
 
 export async function getInvestigationById(params: z.infer<typeof GetInvestigationByIdSchema>) {
-  return defenderApiRequest(`/investigations/${params.investigationId}`);
+  return defenderApiRequest(`/investigations/${params.investigationId}`, { useWdatp: true });
 }
 
 export async function startInvestigation(params: z.infer<typeof StartInvestigationSchema>) {
@@ -138,6 +141,7 @@ export async function startInvestigation(params: z.infer<typeof StartInvestigati
   return defenderApiRequest(`/machines/${machineId}/startInvestigation`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 
@@ -145,17 +149,19 @@ export async function uploadLibraryFile(params: z.infer<typeof UploadLibraryFile
   return defenderApiRequest("/libraryfiles", {
     method: "POST",
     body: params,
+    useWdatp: true,
   });
 }
 
 export async function deleteLibraryFile(params: z.infer<typeof DeleteLibraryFileSchema>) {
   return defenderApiRequest(`/libraryfiles/${params.fileName}`, {
     method: "DELETE",
+    useWdatp: true,
   });
 }
 
 export async function listLibraryFiles(_params: z.infer<typeof ListLibraryFilesSchema>) {
-  return defenderApiRequest("/libraryfiles");
+  return defenderApiRequest("/libraryfiles", { useWdatp: true });
 }
 
 // Tool definitions for MCP

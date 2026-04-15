@@ -86,13 +86,14 @@ export async function getIndicators(params: z.infer<typeof GetIndicatorsSchema>)
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/indicators", { queryParams });
+  return defenderApiRequest("/indicators", { queryParams, useWdatp: true });
 }
 
 export async function createIndicator(params: z.infer<typeof CreateIndicatorSchema>) {
   return defenderApiRequest("/indicators", {
     method: "POST",
     body: params,
+    useWdatp: true,
   });
 }
 
@@ -100,12 +101,14 @@ export async function importIndicators(params: z.infer<typeof ImportIndicatorsSc
   return defenderApiRequest("/indicators/import", {
     method: "POST",
     body: { Indicators: params.indicators },
+    useWdatp: true,
   });
 }
 
 export async function deleteIndicator(params: z.infer<typeof DeleteIndicatorSchema>) {
   return defenderApiRequest(`/indicators/${params.indicatorId}`, {
     method: "DELETE",
+    useWdatp: true,
   });
 }
 
@@ -113,6 +116,7 @@ export async function batchDeleteIndicators(params: z.infer<typeof BatchDeleteIn
   return defenderApiRequest("/indicators/batchDelete", {
     method: "POST",
     body: { IndicatorIds: params.indicatorIds },
+    useWdatp: true,
   });
 }
 

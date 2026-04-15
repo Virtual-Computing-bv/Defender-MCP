@@ -6,10 +6,14 @@ export interface DefenderAuthConfig {
   clientSecret: string;
 }
 
-const DEFENDER_SCOPE = "https://api.security.microsoft.com/.default";
+// Two separate resource scopes
+const MTP_SCOPE   = "https://api.security.microsoft.com/.default";   // Incidents, XDR Advanced Hunting
+const WDATP_SCOPE = "https://api.securitycenter.microsoft.com/.default"; // Alerts, Machines, Files, IPs, etc.
 
 let msalClient: ConfidentialClientApplication | null = null;
-let cachedToken: { token: string; expiresAt: number } | null = null;
+
+// Separate token caches per scope
+const tokenCache: Record<string, { token: string; expiresAt: number }> = {};
 
 export function initializeAuth(config: DefenderAuthConfig): void {
   const msalConfig: Configuration = {
@@ -23,32 +27,43 @@ export function initializeAuth(config: DefenderAuthConfig): void {
   msalClient = new ConfidentialClientApplication(msalConfig);
 }
 
-export async function getAccessToken(): Promise<string> {
+async function getTokenForScope(scope: string): Promise<string> {
   if (!msalClient) {
     throw new Error(
       "Authentication not initialized. Please set DEFENDER_TENANT_ID, DEFENDER_CLIENT_ID, and DEFENDER_CLIENT_SECRET environment variables."
     );
   }
 
-  // Check if we have a valid cached token
-  if (cachedToken && Date.now() < cachedToken.expiresAt - 60000) {
-    return cachedToken.token;
+  // Return cached token if still valid (with 60s buffer)
+  const cached = tokenCache[scope];
+  if (cached && Date.now() < cached.expiresAt - 60000) {
+    return cached.token;
   }
 
   const result = await msalClient.acquireTokenByClientCredential({
-    scopes: [DEFENDER_SCOPE],
+    scopes: [scope],
   });
 
   if (!result || !result.accessToken) {
-    throw new Error("Failed to acquire access token");
+    throw new Error(`Failed to acquire access token for scope: ${scope}`);
   }
 
-  cachedToken = {
+  tokenCache[scope] = {
     token: result.accessToken,
     expiresAt: result.expiresOn ? result.expiresOn.getTime() : Date.now() + 3600000,
   };
 
-  return cachedToken.token;
+  return tokenCache[scope].token;
+}
+
+/** Token for Incidents and XDR Advanced Hunting (Microsoft Threat Protection) */
+export async function getAccessToken(): Promise<string> {
+  return getTokenForScope(MTP_SCOPE);
+}
+
+/** Token for Alerts, Machines, Files, IPs, URLs, Users, WDATP Advanced Queries */
+export async function getWdatpAccessToken(): Promise<string> {
+  return getTokenForScope(WDATP_SCOPE);
 }
 
 export function isAuthConfigured(): boolean {

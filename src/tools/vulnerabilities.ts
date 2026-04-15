@@ -91,23 +91,23 @@ export async function getVulnerabilities(params: z.infer<typeof GetVulnerabiliti
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/vulnerabilities", { queryParams });
+  return defenderApiRequest("/vulnerabilities", { queryParams, useWdatp: true });
 }
 
 export async function getVulnerabilityById(params: z.infer<typeof GetVulnerabilityByIdSchema>) {
-  return defenderApiRequest(`/vulnerabilities/${params.cveId}`);
+  return defenderApiRequest(`/vulnerabilities/${params.cveId}`, { useWdatp: true });
 }
 
 export async function getMachineVulnerabilities(
   params: z.infer<typeof GetMachineVulnerabilitiesSchema>
 ) {
-  return defenderApiRequest(`/machines/${params.machineId}/vulnerabilities`);
+  return defenderApiRequest(`/machines/${params.machineId}/vulnerabilities`, { useWdatp: true });
 }
 
 export async function getMachinesByVulnerability(
   params: z.infer<typeof GetMachinesByVulnerabilitySchema>
 ) {
-  return defenderApiRequest(`/vulnerabilities/${params.cveId}/machineReferences`);
+  return defenderApiRequest(`/vulnerabilities/${params.cveId}/machineReferences`, { useWdatp: true });
 }
 
 export async function getSoftware(params: z.infer<typeof GetSoftwareSchema>) {
@@ -116,27 +116,27 @@ export async function getSoftware(params: z.infer<typeof GetSoftwareSchema>) {
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/software", { queryParams });
+  return defenderApiRequest("/software", { queryParams, useWdatp: true });
 }
 
 export async function getSoftwareById(params: z.infer<typeof GetSoftwareByIdSchema>) {
-  return defenderApiRequest(`/software/${params.softwareId}`);
+  return defenderApiRequest(`/software/${params.softwareId}`, { useWdatp: true });
 }
 
 export async function getSoftwareVulnerabilities(
   params: z.infer<typeof GetSoftwareVulnerabilitiesSchema>
 ) {
-  return defenderApiRequest(`/software/${params.softwareId}/vulnerabilities`);
+  return defenderApiRequest(`/software/${params.softwareId}/vulnerabilities`, { useWdatp: true });
 }
 
 export async function getMachinesBySoftware(params: z.infer<typeof GetMachinesBySoftwareSchema>) {
-  return defenderApiRequest(`/software/${params.softwareId}/machineReferences`);
+  return defenderApiRequest(`/software/${params.softwareId}/machineReferences`, { useWdatp: true });
 }
 
 export async function getSoftwareVersionDistribution(
   params: z.infer<typeof GetSoftwareVersionDistributionSchema>
 ) {
-  return defenderApiRequest(`/software/${params.softwareId}/distributions`);
+  return defenderApiRequest(`/software/${params.softwareId}/distributions`, { useWdatp: true });
 }
 
 export async function getRecommendations(params: z.infer<typeof GetRecommendationsSchema>) {
@@ -145,23 +145,23 @@ export async function getRecommendations(params: z.infer<typeof GetRecommendatio
   if (params.top) queryParams.$top = params.top;
   if (params.skip) queryParams.$skip = params.skip;
 
-  return defenderApiRequest("/recommendations", { queryParams });
+  return defenderApiRequest("/recommendations", { queryParams, useWdatp: true });
 }
 
 export async function getRecommendationById(params: z.infer<typeof GetRecommendationByIdSchema>) {
-  return defenderApiRequest(`/recommendations/${params.recommendationId}`);
+  return defenderApiRequest(`/recommendations/${params.recommendationId}`, { useWdatp: true });
 }
 
 export async function getRecommendationMachines(
   params: z.infer<typeof GetRecommendationMachinesSchema>
 ) {
-  return defenderApiRequest(`/recommendations/${params.recommendationId}/machineReferences`);
+  return defenderApiRequest(`/recommendations/${params.recommendationId}/machineReferences`, { useWdatp: true });
 }
 
 export async function getRecommendationVulnerabilities(
   params: z.infer<typeof GetRecommendationVulnerabilitiesSchema>
 ) {
-  return defenderApiRequest(`/recommendations/${params.recommendationId}/vulnerabilities`);
+  return defenderApiRequest(`/recommendations/${params.recommendationId}/vulnerabilities`, { useWdatp: true });
 }
 
 export async function getRemediationActivities(
@@ -171,19 +171,19 @@ export async function getRemediationActivities(
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest("/remediationTasks", { queryParams });
+  return defenderApiRequest("/remediationTasks", { queryParams, useWdatp: true });
 }
 
 export async function getRemediationActivityById(
   params: z.infer<typeof GetRemediationActivityByIdSchema>
 ) {
-  return defenderApiRequest(`/remediationTasks/${params.activityId}`);
+  return defenderApiRequest(`/remediationTasks/${params.activityId}`, { useWdatp: true });
 }
 
 export async function getRemediationExposedDevices(
   params: z.infer<typeof GetRemediationExposedDevicesSchema>
 ) {
-  return defenderApiRequest(`/remediationTasks/${params.activityId}/machineReferences`);
+  return defenderApiRequest(`/remediationTasks/${params.activityId}/machineReferences`, { useWdatp: true });
 }
 
 export async function exportAssessment(params: z.infer<typeof ExportAssessmentSchema>) {
@@ -194,7 +194,7 @@ export async function exportAssessment(params: z.infer<typeof ExportAssessmentSc
     browserExtensions: "/machines/BrowserExtensionsInventoryByMachine",
   };
 
-  return defenderApiRequest(endpoints[params.assessmentType]);
+  return defenderApiRequest(endpoints[params.assessmentType], { useWdatp: true });
 }
 
 // Tool definitions for MCP

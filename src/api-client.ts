@@ -1,6 +1,7 @@
-import { getAccessToken } from "./auth.js";
+import { getAccessToken, getWdatpAccessToken } from "./auth.js";
 
-const BASE_URL = "https://api.security.microsoft.com/api";
+const MTP_BASE_URL   = "https://api.security.microsoft.com/api";
+const WDATP_BASE_URL = "https://api.securitycenter.microsoft.com/api";
 
 export interface ApiResponse<T = unknown> {
   value?: T[];
@@ -13,6 +14,8 @@ export interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   queryParams?: Record<string, string | number | boolean | undefined>;
+  /** Set to true for Alerts, Machines, Files, IPs, URLs, Users, WDATP AdvancedQueries */
+  useWdatp?: boolean;
 }
 
 function buildQueryString(params?: Record<string, string | number | boolean | undefined>): string {
@@ -29,10 +32,11 @@ export async function defenderApiRequest<T = unknown>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { method = "GET", body, queryParams } = options;
+  const { method = "GET", body, queryParams, useWdatp = false } = options;
 
-  const token = await getAccessToken();
-  const url = `${BASE_URL}${endpoint}${buildQueryString(queryParams)}`;
+  const token   = useWdatp ? await getWdatpAccessToken() : await getAccessToken();
+  const baseUrl = useWdatp ? WDATP_BASE_URL : MTP_BASE_URL;
+  const url     = `${baseUrl}${endpoint}${buildQueryString(queryParams)}`;
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${token}`,
@@ -72,11 +76,12 @@ export async function defenderApiRequestPaginated<T = unknown>(
   const results: T[] = [];
   let nextLink: string | undefined;
   let currentUrl = endpoint;
+  const baseUrl = options.useWdatp ? WDATP_BASE_URL : MTP_BASE_URL;
 
   do {
     const response = await defenderApiRequest<ApiResponse<T>>(
-      nextLink ? nextLink.replace(BASE_URL, "") : currentUrl,
-      nextLink ? { method: options.method } : options
+      nextLink ? nextLink.replace(baseUrl, "") : currentUrl,
+      nextLink ? { method: options.method, useWdatp: options.useWdatp } : options
     );
 
     if (response.value) {

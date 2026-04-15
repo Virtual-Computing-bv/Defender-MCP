@@ -95,21 +95,22 @@ export async function getMachines(params: z.infer<typeof GetMachinesSchema>) {
   if (params.skip) queryParams.$skip = params.skip;
   if (params.orderby) queryParams.$orderby = params.orderby;
 
-  return defenderApiRequest("/machines", { queryParams });
+  return defenderApiRequest("/machines", { queryParams, useWdatp: true });
 }
 
 export async function getMachineById(params: z.infer<typeof GetMachineByIdSchema>) {
-  return defenderApiRequest(`/machines/${params.machineId}`);
+  return defenderApiRequest(`/machines/${params.machineId}`, { useWdatp: true });
 }
 
 export async function findMachinesByIp(params: z.infer<typeof FindMachinesByIpSchema>) {
-  return defenderApiRequest(`/machines/findbyip(ip='${params.ip}',timestamp=${params.timestamp})`);
+  return defenderApiRequest(`/machines/findbyip(ip='${params.ip}',timestamp=${params.timestamp})`, { useWdatp: true });
 }
 
 export async function findMachinesByTag(params: z.infer<typeof FindMachinesByTagSchema>) {
   return defenderApiRequest(`/machines/findbytag`, {
     method: "POST",
     body: { Value: params.tag },
+    useWdatp: true,
   });
 }
 
@@ -118,6 +119,7 @@ export async function updateMachine(params: z.infer<typeof UpdateMachineSchema>)
   return defenderApiRequest(`/machines/${machineId}`, {
     method: "PATCH",
     body,
+    useWdatp: true,
   });
 }
 
@@ -126,11 +128,12 @@ export async function addRemoveMachineTag(params: z.infer<typeof AddRemoveMachin
   return defenderApiRequest(`/machines/${machineId}/tags`, {
     method: "POST",
     body: { Value: body.value, Action: body.action },
+    useWdatp: true,
   });
 }
 
 export async function getMachineLogonUsers(params: z.infer<typeof GetMachineLogonUsersSchema>) {
-  return defenderApiRequest(`/machines/${params.machineId}/logonusers`);
+  return defenderApiRequest(`/machines/${params.machineId}/logonusers`, { useWdatp: true });
 }
 
 export async function getMachineAlerts(params: z.infer<typeof GetMachineAlertsSchema>) {
@@ -138,7 +141,7 @@ export async function getMachineAlerts(params: z.infer<typeof GetMachineAlertsSc
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/machines/${params.machineId}/alerts`, { queryParams });
+  return defenderApiRequest(`/machines/${params.machineId}/alerts`, { queryParams, useWdatp: true });
 }
 
 export async function isolateMachine(params: z.infer<typeof IsolateMachineSchema>) {
@@ -146,6 +149,7 @@ export async function isolateMachine(params: z.infer<typeof IsolateMachineSchema
   return defenderApiRequest(`/machines/${machineId}/isolate`, {
     method: "POST",
     body: { Comment: body.comment, IsolationType: body.isolationType },
+    useWdatp: true,
   });
 }
 
@@ -154,6 +158,7 @@ export async function unisolateMachine(params: z.infer<typeof UnisolateMachineSc
   return defenderApiRequest(`/machines/${machineId}/unisolate`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 
@@ -162,6 +167,7 @@ export async function runAvScan(params: z.infer<typeof RunAvScanSchema>) {
   return defenderApiRequest(`/machines/${machineId}/runAntiVirusScan`, {
     method: "POST",
     body: { Comment: body.comment, ScanType: body.scanType },
+    useWdatp: true,
   });
 }
 
@@ -170,6 +176,7 @@ export async function restrictCodeExecution(params: z.infer<typeof RestrictCodeE
   return defenderApiRequest(`/machines/${machineId}/restrictCodeExecution`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 
@@ -180,6 +187,7 @@ export async function unrestrictCodeExecution(
   return defenderApiRequest(`/machines/${machineId}/unrestrictCodeExecution`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 
@@ -188,6 +196,7 @@ export async function stopAndQuarantineFile(params: z.infer<typeof StopAndQuaran
   return defenderApiRequest(`/machines/${machineId}/StopAndQuarantineFile`, {
     method: "POST",
     body: { Comment: body.comment, Sha1: body.sha1 },
+    useWdatp: true,
   });
 }
 
@@ -198,6 +207,7 @@ export async function collectInvestigationPackage(
   return defenderApiRequest(`/machines/${machineId}/collectInvestigationPackage`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 
@@ -206,6 +216,7 @@ export async function offboardMachine(params: z.infer<typeof OffboardMachineSche
   return defenderApiRequest(`/machines/${machineId}/offboard`, {
     method: "POST",
     body: { Comment: body.comment },
+    useWdatp: true,
   });
 }
 

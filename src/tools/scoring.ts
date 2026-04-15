@@ -17,17 +17,17 @@ export const ExportAntivirusHealthSchema = z.object({});
 
 // Tool implementations
 export async function getExposureScore(_params: z.infer<typeof GetExposureScoreSchema>) {
-  return defenderApiRequest("/exposureScore");
+  return defenderApiRequest("/exposureScore", { useWdatp: true });
 }
 
 export async function getSecureScore(_params: z.infer<typeof GetSecureScoreSchema>) {
-  return defenderApiRequest("/configurationScore");
+  return defenderApiRequest("/configurationScore", { useWdatp: true });
 }
 
 export async function getMachineGroupExposureScore(
   _params: z.infer<typeof GetMachineGroupExposureScoreSchema>
 ) {
-  return defenderApiRequest("/exposureScore/byMachineGroups");
+  return defenderApiRequest("/exposureScore/byMachineGroups", { useWdatp: true });
 }
 
 export async function getDeviceHealth(params: z.infer<typeof GetDeviceHealthSchema>) {
@@ -35,13 +35,13 @@ export async function getDeviceHealth(params: z.infer<typeof GetDeviceHealthSche
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest("/devicehealth/antivirus", { queryParams });
+  return defenderApiRequest("/devicehealth/antivirus", { queryParams, useWdatp: true });
 }
 
 export async function exportAntivirusHealth(
   _params: z.infer<typeof ExportAntivirusHealthSchema>
 ) {
-  return defenderApiRequest("/devicehealth/antivirus/export");
+  return defenderApiRequest("/devicehealth/antivirus/export", { useWdatp: true });
 }
 
 // Tool definitions for MCP

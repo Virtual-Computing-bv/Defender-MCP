@@ -81,11 +81,11 @@ export async function getAlerts(params: z.infer<typeof GetAlertsSchema>) {
   if (params.orderby) queryParams.$orderby = params.orderby;
   if (params.expand) queryParams.$expand = params.expand;
 
-  return defenderApiRequest("/alerts", { queryParams });
+  return defenderApiRequest("/alerts", { queryParams, useWdatp: true });
 }
 
 export async function getAlertById(params: z.infer<typeof GetAlertByIdSchema>) {
-  return defenderApiRequest(`/alerts/${params.alertId}`);
+  return defenderApiRequest(`/alerts/${params.alertId}`, { useWdatp: true });
 }
 
 export async function updateAlert(params: z.infer<typeof UpdateAlertSchema>) {
@@ -93,6 +93,7 @@ export async function updateAlert(params: z.infer<typeof UpdateAlertSchema>) {
   return defenderApiRequest(`/alerts/${alertId}`, {
     method: "PATCH",
     body,
+    useWdatp: true,
   });
 }
 
@@ -100,6 +101,7 @@ export async function batchUpdateAlerts(params: z.infer<typeof BatchUpdateAlerts
   return defenderApiRequest("/alerts/batchUpdate", {
     method: "POST",
     body: params,
+    useWdatp: true,
   });
 }
 
@@ -107,6 +109,7 @@ export async function createAlert(params: z.infer<typeof CreateAlertSchema>) {
   return defenderApiRequest("/alerts/CreateAlertByReference", {
     method: "POST",
     body: params,
+    useWdatp: true,
   });
 }
 

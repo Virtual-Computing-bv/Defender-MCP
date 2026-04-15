@@ -65,7 +65,7 @@ export const GetUserMachinesSchema = z.object({
 
 // Tool implementations
 export async function getFileInfo(params: z.infer<typeof GetFileInfoSchema>) {
-  return defenderApiRequest(`/files/${params.fileHash}`);
+  return defenderApiRequest(`/files/${params.fileHash}`, { useWdatp: true });
 }
 
 export async function getFileAlerts(params: z.infer<typeof GetFileAlertsSchema>) {
@@ -73,7 +73,7 @@ export async function getFileAlerts(params: z.infer<typeof GetFileAlertsSchema>)
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/files/${params.fileHash}/alerts`, { queryParams });
+  return defenderApiRequest(`/files/${params.fileHash}/alerts`, { queryParams, useWdatp: true });
 }
 
 export async function getFileMachines(params: z.infer<typeof GetFileMachinesSchema>) {
@@ -81,11 +81,11 @@ export async function getFileMachines(params: z.infer<typeof GetFileMachinesSche
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/files/${params.fileHash}/machines`, { queryParams });
+  return defenderApiRequest(`/files/${params.fileHash}/machines`, { queryParams, useWdatp: true });
 }
 
 export async function getFileStatistics(params: z.infer<typeof GetFileStatisticsSchema>) {
-  return defenderApiRequest(`/files/${params.fileHash}/stats`);
+  return defenderApiRequest(`/files/${params.fileHash}/stats`, { useWdatp: true });
 }
 
 export async function getDomainAlerts(params: z.infer<typeof GetDomainAlertsSchema>) {
@@ -93,7 +93,7 @@ export async function getDomainAlerts(params: z.infer<typeof GetDomainAlertsSche
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/domains/${params.domain}/alerts`, { queryParams });
+  return defenderApiRequest(`/domains/${params.domain}/alerts`, { queryParams, useWdatp: true });
 }
 
 export async function getDomainMachines(params: z.infer<typeof GetDomainMachinesSchema>) {
@@ -101,11 +101,11 @@ export async function getDomainMachines(params: z.infer<typeof GetDomainMachines
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/domains/${params.domain}/machines`, { queryParams });
+  return defenderApiRequest(`/domains/${params.domain}/machines`, { queryParams, useWdatp: true });
 }
 
 export async function getDomainStatistics(params: z.infer<typeof GetDomainStatisticsSchema>) {
-  return defenderApiRequest(`/domains/${params.domain}/stats`);
+  return defenderApiRequest(`/domains/${params.domain}/stats`, { useWdatp: true });
 }
 
 export async function getIpAlerts(params: z.infer<typeof GetIpAlertsSchema>) {
@@ -113,11 +113,11 @@ export async function getIpAlerts(params: z.infer<typeof GetIpAlertsSchema>) {
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/ips/${params.ip}/alerts`, { queryParams });
+  return defenderApiRequest(`/ips/${params.ip}/alerts`, { queryParams, useWdatp: true });
 }
 
 export async function getIpStatistics(params: z.infer<typeof GetIpStatisticsSchema>) {
-  return defenderApiRequest(`/ips/${params.ip}/stats`);
+  return defenderApiRequest(`/ips/${params.ip}/stats`, { useWdatp: true });
 }
 
 export async function getUserAlerts(params: z.infer<typeof GetUserAlertsSchema>) {
@@ -125,7 +125,7 @@ export async function getUserAlerts(params: z.infer<typeof GetUserAlertsSchema>)
   if (params.filter) queryParams.$filter = params.filter;
   if (params.top) queryParams.$top = params.top;
 
-  return defenderApiRequest(`/users/${encodeURIComponent(params.userId)}/alerts`, { queryParams });
+  return defenderApiRequest(`/users/${encodeURIComponent(params.userId)}/alerts`, { queryParams, useWdatp: true });
 }
 
 export async function getUserMachines(params: z.infer<typeof GetUserMachinesSchema>) {
@@ -135,6 +135,7 @@ export async function getUserMachines(params: z.infer<typeof GetUserMachinesSche
 
   return defenderApiRequest(`/users/${encodeURIComponent(params.userId)}/machines`, {
     queryParams,
+    useWdatp: true,
   });
 }
 
