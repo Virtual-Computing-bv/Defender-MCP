@@ -188,34 +188,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   try {
-    // Validate and parse arguments
     const parsedArgs = toolDef.schema.parse(args || {});
-
-    // Execute the tool handler
+    console.error(`[mcp] call ${name} args=${JSON.stringify(parsedArgs).slice(0,200)}`);
     const result = await toolDef.handler(parsedArgs);
-
+    const text = JSON.stringify(result, null, 2);
+    console.error(`[mcp] result ${name} bytes=${text.length} preview=${text.slice(0,200).replace(/\n/g," ")}`);
     return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
+      content: [{ type: "text", text }],
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[mcp] ERROR ${name}: ${errorMessage.slice(0,400)}`);
     return {
       content: [
         {
           type: "text",
-          text: JSON.stringify(
-            {
-              error: "Tool execution failed",
-              message: errorMessage,
-            },
-            null,
-            2
-          ),
+          text: JSON.stringify({ error: "Tool execution failed", message: errorMessage }, null, 2),
         },
       ],
       isError: true,
