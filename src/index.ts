@@ -9,7 +9,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
-import { initializeAuth, isAuthConfigured } from "./auth.js";
+import { initializeAuth, isAuthConfigured, authConfigFromEnv } from "./auth.js";
 import { alertTools } from "./tools/alerts.js";
 import { machineTools } from "./tools/machines.js";
 import { vulnerabilityTools } from "./tools/vulnerabilities.js";
@@ -225,25 +225,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Main entry point
 async function main() {
-  // Initialize authentication from environment variables
-  const tenantId = process.env.DEFENDER_TENANT_ID;
-  const clientId = process.env.DEFENDER_CLIENT_ID;
-  const clientSecret = process.env.DEFENDER_CLIENT_SECRET;
-
-  if (tenantId && clientId && clientSecret) {
-    initializeAuth({
-      tenantId,
-      clientId,
-      clientSecret,
-    });
-    console.error("Authentication initialized successfully");
-  } else {
-    console.error(
-      "Warning: Authentication not configured. Set DEFENDER_TENANT_ID, DEFENDER_CLIENT_ID, and DEFENDER_CLIENT_SECRET environment variables."
-    );
+  try {
+    initializeAuth(authConfigFromEnv());
+    const mode = process.env.DEFENDER_CERT_THUMBPRINT ? "certificate" : "client-secret";
+    console.error(`Authentication initialized (${mode}, region=${(process.env.DEFENDER_REGION ?? "global").toLowerCase()})`);
+  } catch (err) {
+    console.error(`Warning: Authentication not configured — ${(err as Error).message}`);
   }
 
-  // Start the server
   const transport = new StdioServerTransport();
   await server.connect(transport);
 

@@ -1,9 +1,17 @@
+import { readFileSync } from "node:fs";
 import { ConfidentialClientApplication, Configuration } from "@azure/msal-node";
 
 export interface DefenderAuthConfig {
   tenantId: string;
   clientId: string;
-  clientSecret: string;
+  // Provide EITHER clientSecret OR clientCertificate; cert is preferred for
+  // long-running deployments (no plaintext secret on disk after the cert is
+  // converted to PEM, and easier rotation via Entra without code changes).
+  clientSecret?: string;
+  clientCertificate?: {
+    thumbprint: string;       // SHA-1 of the public cert (Entra "Thumbprint")
+    privateKeyPem: string;    // PEM-encoded private key (PKCS#8 or PKCS#1)
+  };
 }
 
 // Two separate resource scopes
@@ -16,15 +24,60 @@ let msalClient: ConfidentialClientApplication | null = null;
 const tokenCache: Record<string, { token: string; expiresAt: number }> = {};
 
 export function initializeAuth(config: DefenderAuthConfig): void {
-  const msalConfig: Configuration = {
-    auth: {
-      clientId: config.clientId,
-      authority: `https://login.microsoftonline.com/${config.tenantId}`,
-      clientSecret: config.clientSecret,
-    },
+  if (!config.clientSecret && !config.clientCertificate) {
+    throw new Error(
+      "Auth misconfigured: provide either clientSecret or clientCertificate."
+    );
+  }
+
+  const authConfig: Configuration["auth"] = {
+    clientId: config.clientId,
+    authority: `https://login.microsoftonline.com/${config.tenantId}`,
   };
 
-  msalClient = new ConfidentialClientApplication(msalConfig);
+  if (config.clientCertificate) {
+    authConfig.clientCertificate = {
+      thumbprint: config.clientCertificate.thumbprint,
+      privateKey: config.clientCertificate.privateKeyPem,
+    };
+  } else {
+    authConfig.clientSecret = config.clientSecret;
+  }
+
+  msalClient = new ConfidentialClientApplication({ auth: authConfig });
+}
+
+/**
+ * Build a DefenderAuthConfig from process.env. Prefers cert if both are set.
+ * Cert env vars: DEFENDER_CERT_THUMBPRINT + DEFENDER_CERT_KEY_PATH (file path
+ * to the PEM private key). Falls back to DEFENDER_CLIENT_SECRET.
+ */
+export function authConfigFromEnv(): DefenderAuthConfig {
+  const tenantId = required("DEFENDER_TENANT_ID");
+  const clientId = required("DEFENDER_CLIENT_ID");
+  const certThumbprint = process.env.DEFENDER_CERT_THUMBPRINT?.trim();
+  const certKeyPath    = process.env.DEFENDER_CERT_KEY_PATH?.trim();
+  if (certThumbprint && certKeyPath) {
+    return {
+      tenantId,
+      clientId,
+      clientCertificate: {
+        thumbprint: certThumbprint,
+        privateKeyPem: readFileSync(certKeyPath, "utf8"),
+      },
+    };
+  }
+  return {
+    tenantId,
+    clientId,
+    clientSecret: required("DEFENDER_CLIENT_SECRET"),
+  };
+}
+
+function required(name: string): string {
+  const v = process.env[name];
+  if (!v) throw new Error(`Missing required env var: ${name}`);
+  return v;
 }
 
 async function getTokenForScope(scope: string): Promise<string> {

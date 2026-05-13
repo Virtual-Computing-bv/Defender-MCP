@@ -1,7 +1,49 @@
 import { getAccessToken, getWdatpAccessToken } from "./auth.js";
 
-const MTP_BASE_URL   = "https://api.security.microsoft.com/api";
-const WDATP_BASE_URL = "https://api.securitycenter.microsoft.com/api";
+// Regional API endpoints. Defender for Endpoint and M365 Defender are sharded
+// per region — using the wrong base URL returns 403/404 for tenants located
+// outside the global default. Set DEFENDER_REGION ("global" | "eu" | "uk" |
+// "us") or override the two URLs explicitly via env.
+//
+// Confirmed against Microsoft docs + a working n8n integration in May 2026:
+//   eu:     MTP = https://eu.api.security.microsoft.com/api
+//           WDATP = https://api-eu.securitycenter.microsoft.com/api
+//   uk:     MTP = https://uk.api.security.microsoft.com/api
+//           WDATP = https://api-uk.securitycenter.microsoft.com/api
+//   us:     MTP = https://api-us.security.microsoft.com/api
+//           WDATP = https://api-us.securitycenter.microsoft.com/api
+//   global: MTP = https://api.security.microsoft.com/api
+//           WDATP = https://api.securitycenter.microsoft.com/api
+const REGION = (process.env.DEFENDER_REGION ?? "global").toLowerCase();
+
+function regionalBaseUrls(region: string): { mtp: string; wdatp: string } {
+  switch (region) {
+    case "eu":
+      return {
+        mtp:   "https://eu.api.security.microsoft.com/api",
+        wdatp: "https://api-eu.securitycenter.microsoft.com/api",
+      };
+    case "uk":
+      return {
+        mtp:   "https://uk.api.security.microsoft.com/api",
+        wdatp: "https://api-uk.securitycenter.microsoft.com/api",
+      };
+    case "us":
+      return {
+        mtp:   "https://api-us.security.microsoft.com/api",
+        wdatp: "https://api-us.securitycenter.microsoft.com/api",
+      };
+    default:
+      return {
+        mtp:   "https://api.security.microsoft.com/api",
+        wdatp: "https://api.securitycenter.microsoft.com/api",
+      };
+  }
+}
+
+const defaults = regionalBaseUrls(REGION);
+const MTP_BASE_URL   = process.env.DEFENDER_MTP_BASE_URL   ?? defaults.mtp;
+const WDATP_BASE_URL = process.env.DEFENDER_WDATP_BASE_URL ?? defaults.wdatp;
 
 export interface ApiResponse<T = unknown> {
   value?: T[];
