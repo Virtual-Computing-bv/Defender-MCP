@@ -83,6 +83,12 @@ export async function defenderApiRequest<T = unknown>(
   const headers: Record<string, string> = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
+    // Force uncompressed response. Node's undici / native fetch has a
+    // long-standing bug where chunked + gzipped responses from the Defender
+    // APIs surface as `TypeError: terminated` mid-decode. Disabling
+    // compression at the request level sidesteps the bug entirely.
+    "Accept-Encoding": "identity",
+    Accept: "application/json",
   };
 
   const fetchOptions: RequestInit = {
