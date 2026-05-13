@@ -94,12 +94,15 @@ export async function defenderApiRequest<T = unknown>(
     fetchOptions.body = JSON.stringify(body);
   }
 
+  console.error(`[defender-mcp] ${method} ${url} (useWdatp=${useWdatp})`);
   const response = await fetch(url, fetchOptions);
 
   if (!response.ok) {
     const errorText = await response.text();
+    console.error(`[defender-mcp] ERROR ${response.status}: ${errorText.slice(0, 500)}`);
     throw new Error(`Defender API error (${response.status}): ${errorText}`);
   }
+  console.error(`[defender-mcp] OK ${response.status}`);
 
   // Handle empty responses (e.g., DELETE operations)
   const text = await response.text();
